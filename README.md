@@ -1,7 +1,14 @@
 # ModernBERT
 
 gen_dict.py    
-create a dictionary from a text corpus    
+
+```
+python gen_dict.py \
+    --input_file='data/Corpus/*/*.txt' \
+    --output_file='from_corpus.vocab'
+```
+
+
 
 text_processing.py    
 load a corpus text and a dictionary. Convert the text to ids
