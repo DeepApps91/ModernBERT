@@ -51,14 +51,16 @@ class Vocabulary:
         if from_vocab:
             self.word2index = load_vocab(input_file)
         else:
-            self.word2index = collections.OrderedDict({"[UNK]": 0,      # Unknown token
-                                                       "[SOS]": 1,      # Start-of-sentence token
-                                                       "[EOS]": 2,      # End-of-sentence token
-                                                       "[PAD]": 3,      # Used for padding short sentences
-                                                       "[CLS]": 4,      # BERT's CLS token
-                                                       "[SEP]": 5,      # BERT's SEP token
-                                                       "[MASK]": 6})    # BERT's MASK token
-            self.word2index.update(load_corpus(input_file, start_index=len(self.word2index)))
+            # We ignore the [CLS] and [SEP] tokens of the original BERT.
+            # According to the paper, they are not helpful for the masked  
+            # token prediction task.
+            self.word2index = collections.OrderedDict({"[UNK]": 0,
+                                                       "[SOS]": 1,
+                                                       "[EOS]": 2,
+                                                       "[PAD]": 3,
+                                                       "[MASK]": 4})
+            self.word2index.update(load_corpus(input_file,
+                                               len(self.word2index)))
 
         self.index2word = {v: k for k, v in self.word2index.items()}
         self.num_word = len(self.word2index)
