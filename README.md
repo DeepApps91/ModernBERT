@@ -1,11 +1,21 @@
 # ModernBERT
 
-gen_dict.py    
+Use `gen_dict.py` to generate a dictionary from a corpus. The output file is a serialized Vocabulary object.
 
-```
+```bash
 python gen_dict.py \
     --input_file='data/Corpus/*/*.txt' \
-    --output_file='from_corpus.vocab'
+    --output_file='vocab'
+```
+
+Use pickle to deserialize 
+
+```python
+from gen_dict import Vocabulary
+import pickle
+
+with open("vocab", "rb") as f:
+	vocab = pickle.load(f)
 ```
 
 
