@@ -10,23 +10,27 @@ class Vocabulary(object):
 
     def __init__(self,
                  input_file,
+                 encoding='utf-8',
                  special_tokens=["[PAD]", "[UNK]", "[SOS]", "[EOS]", "[MASK]"]):
         """Construct a dictionary from a corpus"""
         vocab = set()
 
         for file in tqdm(glob(input_file)):
-            #print(f"Loading dictionary from {file}")
-            with open(file, 'r') as f:
-                for line in f:
-                    line = line.strip()
-                    for char in line:
-                        if char.strip():    # To avoid empty char
-                            vocab.add(char)
+            try:
+                with open(file, 'r', encoding=encoding) as f:
+                    for line in f:
+                        line = line.strip()
+                        for char in line:
+                            if char.strip():    # To avoid empty char
+                                vocab.add(char)
+            except UnicodeDecodeError as e:
+                print(e)
+                print("UnicodeDecodeError at file:", file)
 
         # Sort alphabetically and add special tokens on top 
-        vocab = special_tokens + sorted(vocab)
+        self.index2word = special_tokens + sorted(vocab)
         self.word2index = dict(zip(vocab, range(len(vocab))))
-        self.index2word = {v: k for k, v in self.word2index.items()}
+        self.size = len(self.word2index)
 
     def to_word(self, index):
         """Convert an index to its corresponding word"""
@@ -57,7 +61,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--input_file', required=True, metavar='PATH')
     parser.add_argument('--output_file', required=True, metavar='PATH')
+    parser.add_argument('--encoding', default='utf-8', metavar='ENCODING')
+
     args = parser.parse_args()
 
-    vocab = Vocabulary(args.input_file)
+    vocab = Vocabulary(args.input_file, args.encoding)
     vocab.save_vocab(args.output_file)
+
+    print(f"Vocabulary size={vocab.size}")
