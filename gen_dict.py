@@ -6,7 +6,12 @@ from tqdm import tqdm
 
 
 class Vocabulary(object):
-    """Vocabulary object to numericalize or denumericalize a token"""
+    """Vocabulary object to numericalize or denumericalize a token.
+    Attributes:
+        index2word: A list of words sorted in alphabetical order
+        word2index: A dictionary maps from word -> index
+        size: Size of the vocabulary
+    """
 
     def __init__(self,
                  input_file,
@@ -28,23 +33,33 @@ class Vocabulary(object):
                 print("UnicodeDecodeError at file:", file)
 
         # Sort alphabetically and add special tokens on top 
-        self.index2word = special_tokens + sorted(vocab)
+        vocab = special_tokens + sorted(vocab)
+        self.index2word = vocab
         self.word2index = dict(zip(vocab, range(len(vocab))))
         self.size = len(self.word2index)
 
-    def to_word(self, index):
-        """Convert an index to its corresponding word"""
-        if index in self.index2word:
-            return self.index2word[index]
-        else:
-            return self.index2word[0]   # UNK_token
+    def to_words(self, indexes):
+        """Convert list of indexes to theirs corresponding words"""
+        words = []
+        for index in indexes:
+            print(index)
+            if index >= 0 and index < self.size:
+                words.append(self.index2word[index])
+            else:
+                words.append(self.index2word[0])   # UNK_token
 
-    def to_index(self, word):
-        """Convert a word to its corresponding index"""
-        if word in self.word2index:
-            return self.word2index[word]
-        else:
-            return self.word2index["[UNK]"] 
+        return words
+
+    def to_indexes(self, words):
+        """Convert list of words to theirs corresponding indexes"""
+        indexes = []
+        for word in words:
+            if word in self.word2index:
+                indexes.append(self.word2index[word])
+            else:
+                indexes.append(self.word2index["[UNK]"])
+
+        return indexes
 
     def save_vocab(self, output_file):
         """Serialize the Vocabulary object"""
