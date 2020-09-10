@@ -133,3 +133,4 @@ data/*
 !data/.gitkeep
 notebook/*
 !notebook/.gitkeep
+command_history.txt
