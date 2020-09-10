@@ -1,4 +1,3 @@
-import collections
 import argparse
 import pickle 
 from glob import glob
@@ -15,9 +14,9 @@ class Vocabulary(object):
 
     def __init__(self,
                  input_file,
-                 encoding='utf-8',
-                 special_tokens=["[PAD]", "[UNK]", "[SOS]", "[EOS]", "[MASK]"]):
+                 encoding='utf-8'):
         """Construct a dictionary from a corpus"""
+        special_tokens = ["[PAD]", "[UNK]", "[SOS]", "[EOS]", "[CLS]", "[SEP]", "[MASK]"]
         vocab = set()
 
         for file in tqdm(glob(input_file)):
@@ -43,7 +42,7 @@ class Vocabulary(object):
         words = []
         for index in indexes:
             print(index)
-            if index >= 0 and index < self.size:
+            if 0 <= index < self.size:
                 words.append(self.index2word[index])
             else:
                 words.append(self.index2word[0])   # UNK_token
@@ -61,14 +60,19 @@ class Vocabulary(object):
 
         return indexes
 
-    def save_vocab(self, output_file):
+    def save_vocab(self, vocab_file, to_binary=False):
         """Serialize the Vocabulary object"""
-        with open(output_file, 'wb') as f:
-            pickle.dump(self, f)
+        if to_binary:
+            with open(vocab_file, 'wb') as f:
+                pickle.dump(self, f)
+        else:
+            with open(vocab_file, 'w') as f:
+                for (index, word) in enumerate(self.index2word):
+                    f.write(f"{word}\n")
 
-    def load_vocab(self, input_file) -> 'Vocabulary':
+    def load_vocab(self, vocab_file):
         """Deserialize a Vocabulary object"""
-        with open(input_file, 'rb') as f:
+        with open(vocab_file, 'rb') as f:
             return pickle.load(f)
 
 
@@ -81,6 +85,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     vocab = Vocabulary(args.input_file, args.encoding)
-    vocab.save_vocab(args.output_file)
+    vocab.save_vocab(args.output_file, to_binary=False)
 
     print(f"Vocabulary size={vocab.size}")
