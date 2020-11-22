@@ -131,3 +131,6 @@ dmypy.json
 # Data folder
 data/*
 !data/.gitkeep
+notebook/*
+!notebook/.gitkeep
+command_history.txt
