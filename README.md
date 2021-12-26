@@ -35,5 +35,3 @@ python run_language_modeling.py \
     --max_steps=300 \
     --seed=12345
 ```
-
-**Remark:** passing the --help flag to see all possible arguments.
